@@ -62,6 +62,8 @@ protected slots:
   void verticalTableTopDisplacementSliderValueChanged();
   void longitudinalTableTopDisplacementSliderValueChanged();
   void lateralTableTopDisplacementSliderValueChanged();
+
+  void beamsEyeViewButtonClicked();
   
   void patientBodySegmentationNodeChanged(vtkMRMLNode*);
   void patientBodySegmentChanged(QString);
