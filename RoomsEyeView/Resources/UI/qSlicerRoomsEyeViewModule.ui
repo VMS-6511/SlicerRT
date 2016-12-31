@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>626</width>
-    <height>850</height>
+    <height>881</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -285,56 +285,46 @@
          <enum>QFrame::StyledPanel</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="1" column="0">
-          <widget class="qMRMLNodeComboBox" name="MRMLNodeComboBox_AddtionalTreatmentModels_"/>
-         </item>
          <item row="0" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <widget class="QCheckBox" name="patientImmobilizationBoardCheckBox">
+            <widget class="QCheckBox" name="applicatorHolderCheckBox">
              <property name="text">
-              <string>Immobilization Board</string>
+              <string>Applicator Holder</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="bodyRestCheckBox">
+            <widget class="QCheckBox" name="electronApplicatorCheckBox">
              <property name="text">
-              <string>Body Rest Supports</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="patientMaskCheckBox">
-             <property name="text">
-              <string>Patient Mask</string>
+              <string>Electron Applicator</string>
              </property>
             </widget>
            </item>
           </layout>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QLabel" name="rTranslationLabel">
+              <widget class="QLabel" name="AdditionalModelsVerticalTranslationLabel">
                <property name="text">
-                <string>R Translation</string>
+                <string>Vertical Translation</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="aTranslationLabel">
+              <widget class="QLabel" name="AdditionalModelsLongitudinalTranslationLabel">
                <property name="text">
-                <string>A Translation</string>
+                <string>Longitudinal Translation</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="sTranslationLabel">
+              <widget class="QLabel" name="AdditionalModelsLateralTranslationLabel">
                <property name="text">
-                <string>S Translation</string>
+                <string>Lateral Translation</string>
                </property>
               </widget>
              </item>
@@ -343,13 +333,13 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
              <item>
-              <widget class="ctkSliderWidget" name="RTranslationSliderWidget"/>
+              <widget class="ctkSliderWidget" name="VerticalTranslationSliderWidget"/>
              </item>
              <item>
-              <widget class="ctkSliderWidget" name="ATranslationSliderWidget"/>
+              <widget class="ctkSliderWidget" name="LongitudinalTranslationSliderWidget"/>
              </item>
              <item>
-              <widget class="ctkSliderWidget" name="STranslationSliderWidget"/>
+              <widget class="ctkSliderWidget" name="LateralTranslationSliderWidget"/>
              </item>
             </layout>
            </item>

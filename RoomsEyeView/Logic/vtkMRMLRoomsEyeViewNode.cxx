@@ -35,7 +35,11 @@
 
 //------------------------------------------------------------------------------
 static const char* GANTRY_TO_FIXEDREFERENCE_TRANSFORM_NODE_REFERENCE_ROLE = "gantryToFixedReferenceTransformRef";
+
+static const char* COLLIMATOR_TO_FIXEDREFERENCEISOCENTER_NODE_REFERENCE_ROLE = "collimatorToFixedReferenceIsocenterTransformRef";
+static const char* FIXEDREFERENCEISOCENTER_TO_COLLIMATORROTATED_NODE_REFERENCE_ROLE = "fixedReferenceIsocenterToCollimatorTransformRef";
 static const char* COLLIMATOR_TO_GANTRY_TRANSFORM_NODE_REFERENCE_ROLE = "collimatorToGantryTransformRef";
+static const char* ADDITIONALCOLLIMATORDEVICES_TO_COLLIMATOR_TRANSFORM_NODE_REFERENCE_ROLE = "additionalCollimatorDevicesToCollimatorTransformRef";
 
 static const char* LEFTIMAGINGPANEL_TO_LEFTIMAGINGPANELFIXEDREFERENCEISOCENTER_TRANSFORM_NODE_REFERENCE_ROLE = "leftImagingPanelToLeftImagingPanelTransformRef";
 static const char* LEFTIMAGINGPANELFIXEDREFERENCEISOCENTER_TO_LEFTIMAGINGPANELROTATED_TRANSFORM_NODE_REFERENCE_ROLE = "leftImagingPanelFixedReferenceIsocenterToLeftImagingPanelRotated";
@@ -47,11 +51,11 @@ static const char* RIGHTIMAGINGPANELFIXEDREFERENCEISOCENTER_TO_RIGHTIMAGINGPANEL
 static const char* RIGHTIMAGINGPANELROTATED_TO_GANTRY_TRANSFORM_NODE_REFERENCE_ROLE = "rightImagingPanelRotatedToGantryTransformRef";
 static const char* RIGHTIMAGINGPANELTRANSLATION_TRANSFORM_NODE_REFERENCE_ROLE = "rightImagingPanelTranslationTransformRef";
 
+
 static const char* PATIENTSUPPORT_TO_FIXEDREFERENCE_TRANSFORM_NODE_REFERENCE_ROLE = "patientSupportToFixedReferenceTransformRef";
 static const char* PATIENTSUPPORTSCALEDBYTABLETOPVERTICALMOVEMENT_TRANSFORM_NODE_REFERENCE_ROLE = "patientSupportScaledByTableTopVerticalMovementTransformRef";
 static const char* PATIENTSUPPORTPOSITIVEVERTICALTRANSLATION_TRANSFORM_NODE_REFERENCE_ROLE = "patientSupportPositiveVerticalTranslationTransformRef";
 static const char* PATIENTSUPPORTSCALEDTRANSLATED_TO_TABLETOPVERTICALTRANSLATION_TRANSFORM_NODE_REFERENCE_ROLE = "patientSupportScaledTranslatedToTableTopVerticalTranslationTransformRef";
-
 static const char* TABLETOP_TO_TABLETOPECCENTRICROTATION_TRANSFORM_NODE_REFERENCE_ROLE = "tableTopToTableTopEccentricRotationTransformRef";
 static const char* TABLETOPECCENTRICROTATION_TO_PATIENTSUPPORT_TRANSFORM_NODE_REFERENCE_ROLE = "tableTopEccentricToPatientSupportTransformRef";
 
@@ -70,6 +74,9 @@ vtkMRMLRoomsEyeViewNode::vtkMRMLRoomsEyeViewNode()
   this->VerticalTableTopDisplacement = 0.0;
   this->LongitudinalTableTopDisplacement = 0.0;
   this->LateralTableTopDisplacement = 0.0;
+  this->AdditionalModelVerticalDisplacement = 0.0;
+  this->AdditionalModelLateralDisplacement = 0.0;
+  this->AdditionalModelLongitudinalDisplacement = 0.0;
   this->PatientBodySegmentID = NULL;
 }
 
@@ -94,6 +101,9 @@ void vtkMRMLRoomsEyeViewNode::WriteXML(ostream& of, int nIndent)
   of << indent << " VerticalTableTopDisplacement=\"" << this->VerticalTableTopDisplacement << "\"";
   of << indent << " LongitudinalTableTopDisplacement=\"" << this->LongitudinalTableTopDisplacement << "\"";
   of << indent << " LateralTableTopDisplacement=\"" << this->LateralTableTopDisplacement << "\"";
+  of << indent << " AdditionalModelVerticalDisplacement=\"" << this->AdditionalModelVerticalDisplacement << "\"";
+  of << indent << " AdditionalModelLongitudinalDisplacement=\"" << this->AdditionalModelLongitudinalDisplacement << "\"";
+  of << indent << " AdditionalModelLateralDisplacement=\"" << this->AdditionalModelLateralDisplacement << "\"";
   of << indent << " PatientBodySegmentID=\"" << (this->PatientBodySegmentID ? this->PatientBodySegmentID : "NULL") << "\"";
 }
 
@@ -139,6 +149,18 @@ void vtkMRMLRoomsEyeViewNode::ReadXMLAttributes(const char** atts)
     {
       this->LateralTableTopDisplacement = vtkVariant(attValue).ToDouble();
     }
+    else if (!strcmp(attName, "AdditionalModelVerticalDisplacement"))
+    {
+      this->VerticalTableTopDisplacement = vtkVariant(attValue).ToDouble();
+    }
+    else if (!strcmp(attName, "AdditionalModelLongitudinalDisplacement"))
+    {
+      this->LongitudinalTableTopDisplacement = vtkVariant(attValue).ToDouble();
+    }
+    else if (!strcmp(attName, "AdditionalModelLateralDisplacement"))
+    {
+      this->LateralTableTopDisplacement = vtkVariant(attValue).ToDouble();
+    }
     else if (!strcmp(attName, "PatientBodySegmentID")) 
     {
       this->SetPatientBodySegmentID(vtkVariant(attValue).ToString());
@@ -165,6 +187,9 @@ void vtkMRMLRoomsEyeViewNode::Copy(vtkMRMLNode *anode)
   this->VerticalTableTopDisplacement = node->VerticalTableTopDisplacement;
   this->LongitudinalTableTopDisplacement = node->LongitudinalTableTopDisplacement;
   this->LateralTableTopDisplacement = node->LateralTableTopDisplacement;
+  this->AdditionalModelVerticalDisplacement = node->AdditionalModelVerticalDisplacement;
+  this->AdditionalModelLongitudinalDisplacement = node->AdditionalModelLongitudinalDisplacement;
+  this->AdditionalModelLateralDisplacement = node->AdditionalModelLateralDisplacement;
   this->SetPatientBodySegmentID(node->PatientBodySegmentID);
 
   this->DisableModifiedEventOff();
@@ -183,6 +208,9 @@ void vtkMRMLRoomsEyeViewNode::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "VerticalTableTopDisplacement:    " << this->VerticalTableTopDisplacement << "\n";
   os << indent << "LongitudinalTableTopDisplacement:    " << this->LongitudinalTableTopDisplacement << "\n";
   os << indent << "LateralTableTopDisplacement:    " << this->LateralTableTopDisplacement << "\n";
+  os << indent << "AdditionalModelVerticalDisplacement:    " << this->AdditionalModelVerticalDisplacement << "\n";
+  os << indent << "AdditionalModelLongitudinalDisplacement:    " << this->AdditionalModelLongitudinalDisplacement << "\n";
+  os << indent << "AdditionalModelLateralDisplacement:    " << this->AdditionalModelLateralDisplacement << "\n";
   os << indent << "PatientBodySegmentID:   " << (this->PatientBodySegmentID ? this->PatientBodySegmentID : "NULL") << "\n";
 }
 
@@ -197,6 +225,26 @@ void vtkMRMLRoomsEyeViewNode::SetAndObserveGantryToFixedReferenceTransformNode(v
 {
   this->SetNodeReferenceID(GANTRY_TO_FIXEDREFERENCE_TRANSFORM_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
 }
+//----------------------------------------------------------------------------
+vtkMRMLLinearTransformNode* vtkMRMLRoomsEyeViewNode::GetCollimatorToFixedReferenceIsocenterTransformNode()
+{
+  return vtkMRMLLinearTransformNode::SafeDownCast(this->GetNodeReference(COLLIMATOR_TO_FIXEDREFERENCEISOCENTER_NODE_REFERENCE_ROLE));
+}
+//----------------------------------------------------------------------------
+void vtkMRMLRoomsEyeViewNode::SetAndObserveCollimatorToFixedReferenceIsocenterTransformNode(vtkMRMLLinearTransformNode* node)
+{
+  this->SetNodeReferenceID(COLLIMATOR_TO_FIXEDREFERENCEISOCENTER_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
+}
+//----------------------------------------------------------------------------
+vtkMRMLLinearTransformNode* vtkMRMLRoomsEyeViewNode::GetFixedReferenceIsocenterToCollimatorRotatedTransformNode()
+{
+  return vtkMRMLLinearTransformNode::SafeDownCast(this->GetNodeReference(FIXEDREFERENCEISOCENTER_TO_COLLIMATORROTATED_NODE_REFERENCE_ROLE));
+}
+//----------------------------------------------------------------------------
+void vtkMRMLRoomsEyeViewNode::SetAndObserveFixedReferenceIsocenterToCollimatorRotatedTransformNode(vtkMRMLLinearTransformNode* node)
+{
+  this->SetNodeReferenceID(FIXEDREFERENCEISOCENTER_TO_COLLIMATORROTATED_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
+}
 
 //----------------------------------------------------------------------------
 vtkMRMLLinearTransformNode* vtkMRMLRoomsEyeViewNode::GetCollimatorToGantryTransformNode()
@@ -208,6 +256,17 @@ vtkMRMLLinearTransformNode* vtkMRMLRoomsEyeViewNode::GetCollimatorToGantryTransf
 void vtkMRMLRoomsEyeViewNode::SetAndObserveCollimatorToGantryTransformNode(vtkMRMLLinearTransformNode* node)
 {
   this->SetNodeReferenceID(COLLIMATOR_TO_GANTRY_TRANSFORM_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
+}
+
+//----------------------------------------------------------------------------
+vtkMRMLLinearTransformNode* vtkMRMLRoomsEyeViewNode::GetAdditionalCollimatorDevicesToCollimatorTransformNode()
+{
+  return vtkMRMLLinearTransformNode::SafeDownCast(this->GetNodeReference(ADDITIONALCOLLIMATORDEVICES_TO_COLLIMATOR_TRANSFORM_NODE_REFERENCE_ROLE));
+}
+//----------------------------------------------------------------------------
+void vtkMRMLRoomsEyeViewNode::SetAndObserveAdditionalCollimatorDevicesToCollimatorTransformNode(vtkMRMLLinearTransformNode* node)
+{
+  this->SetNodeReferenceID(ADDITIONALCOLLIMATORDEVICES_TO_COLLIMATOR_TRANSFORM_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
 }
 
 //----------------------------------------------------------------------------
@@ -376,7 +435,6 @@ void vtkMRMLRoomsEyeViewNode::SetAndObserveTableTopEccentricRotationToPatientSup
 {
   this->SetNodeReferenceID(TABLETOPECCENTRICROTATION_TO_PATIENTSUPPORT_TRANSFORM_NODE_REFERENCE_ROLE, (node ? node->GetID() : NULL));
 }
-
 //----------------------------------------------------------------------------
 vtkMRMLSegmentationNode* vtkMRMLRoomsEyeViewNode::GetPatientBodySegmentationNode()
 {

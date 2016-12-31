@@ -58,8 +58,17 @@ public:
   vtkMRMLLinearTransformNode* GetGantryToFixedReferenceTransformNode();
   void SetAndObserveGantryToFixedReferenceTransformNode(vtkMRMLLinearTransformNode* node);
 
+  vtkMRMLLinearTransformNode* GetCollimatorToFixedReferenceIsocenterTransformNode();
+  void SetAndObserveCollimatorToFixedReferenceIsocenterTransformNode(vtkMRMLLinearTransformNode* node);
+
+  vtkMRMLLinearTransformNode* GetFixedReferenceIsocenterToCollimatorRotatedTransformNode();
+  void SetAndObserveFixedReferenceIsocenterToCollimatorRotatedTransformNode(vtkMRMLLinearTransformNode* node);
+
   vtkMRMLLinearTransformNode* GetCollimatorToGantryTransformNode();
   void SetAndObserveCollimatorToGantryTransformNode(vtkMRMLLinearTransformNode* node);
+
+  vtkMRMLLinearTransformNode* GetAdditionalCollimatorDevicesToCollimatorTransformNode();
+  void SetAndObserveAdditionalCollimatorDevicesToCollimatorTransformNode(vtkMRMLLinearTransformNode* node);
 
   vtkMRMLLinearTransformNode* GetLeftImagingPanelToLeftImagingPanelFixedReferenceIsocenterTransformNode();
   void SetAndObserveLeftImagingPanelToLeftImagingPanelFixedReferenceIsocenterTransformNode(vtkMRMLLinearTransformNode* node);
@@ -102,6 +111,8 @@ public:
 
   vtkMRMLLinearTransformNode* GetPatientSupportScaledTranslatedToTableTopVerticalTranslationTransformNode();
   void SetAndObserveTableTopEccentricRotationToPatientSupportTransformNode(vtkMRMLLinearTransformNode* node);
+
+  
  
   /// Get patient body segmentation node
   vtkMRMLSegmentationNode* GetPatientBodySegmentationNode();
@@ -122,6 +133,11 @@ public:
   vtkGetMacro(VerticalTableTopDisplacement, double);
   vtkGetMacro(LongitudinalTableTopDisplacement, double);
   vtkGetMacro(LateralTableTopDisplacement, double);
+  vtkGetMacro(AdditionalModelLongitudinalDisplacement, double);
+  vtkGetMacro(AdditionalModelVerticalDisplacement, double);
+  vtkGetMacro(AdditionalModelLateralDisplacement, double);
+  vtkGetMacro(ApplicatorHolderVisibility, int);
+  vtkGetMacro(ElectronApplicatorVisibility, int);
   /// Set TODO:
   vtkSetMacro(GantryRotationAngle, double);
   vtkSetMacro(CollimatorRotationAngle, double);
@@ -130,6 +146,11 @@ public:
   vtkSetMacro(VerticalTableTopDisplacement, double);
   vtkSetMacro(LongitudinalTableTopDisplacement, double);
   vtkSetMacro(LateralTableTopDisplacement, double);
+  vtkSetMacro(AdditionalModelLongitudinalDisplacement, double);
+  vtkSetMacro(AdditionalModelVerticalDisplacement, double);
+  vtkSetMacro(AdditionalModelLateralDisplacement, double);
+  vtkSetMacro(ApplicatorHolderVisibility, int);
+  vtkSetMacro(ElectronApplicatorVisibility, int);
 
 protected:
   vtkMRMLRoomsEyeViewNode();
@@ -149,6 +170,11 @@ protected:
   double VerticalTableTopDisplacement;
   double LongitudinalTableTopDisplacement;
   double LateralTableTopDisplacement;
+  double AdditionalModelVerticalDisplacement;
+  double AdditionalModelLongitudinalDisplacement;
+  double AdditionalModelLateralDisplacement;
+  int ApplicatorHolderVisibility;
+  int ElectronApplicatorVisibility;
 };
 
 #endif
