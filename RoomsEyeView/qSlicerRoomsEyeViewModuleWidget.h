@@ -67,7 +67,6 @@ protected slots:
   void additionalModelLongitudinalDisplacementSliderValueChanged();
   void additionalModelVerticalDisplacementSliderValueChanged();
 
-
   void beamsEyeViewButtonClicked();
   
   void patientBodySegmentationNodeChanged(vtkMRMLNode*);

@@ -12,7 +12,6 @@ if(NOT Plastimatch_FOUND)
 endif() 
 
 #-----------------------------------------------------------------------------
-# add_subdirectory(MRML)
 add_subdirectory(Logic)
 add_subdirectory(TreatmentMachineModels)
 
@@ -23,6 +22,8 @@ set(MODULE_INCLUDE_DIRECTORIES
   ${SlicerRtCommon_INCLUDE_DIRS}
   ${vtkSlicerSegmentationsModuleMRML_INCLUDE_DIRS}
   ${qSlicerSegmentationsModuleWidgets_INCLUDE_DIRS}
+  ${vtkSlicerBeamsModuleMRML_INCLUDE_DIRS}
+  ${qSlicerBeamsModuleWidgets_INCLUDE_DIRS}
   )
 
 set(MODULE_SRCS
@@ -42,11 +43,16 @@ set(MODULE_UI_SRCS
   )
 
 set(MODULE_TARGET_LIBRARIES
-  # vtkSlicer${MODULE_NAME}ModuleMRML
   vtkSlicer${MODULE_NAME}ModuleLogic
   vtkSlicerSegmentationsModuleMRML
   qSlicerSegmentationsModuleWidgets
+  vtkSlicerBeamsModuleMRML
+  qSlicerBeamsModuleWidgets
   )
+
+set(MODULE_RESOURCES
+  Resources/qSlicer${MODULE_NAME}Module.qrc
+)
 
 #-----------------------------------------------------------------------------
 slicerMacroBuildLoadableModule(
@@ -58,6 +64,7 @@ slicerMacroBuildLoadableModule(
   MOC_SRCS ${MODULE_MOC_SRCS}
   UI_SRCS ${MODULE_UI_SRCS}
   TARGET_LIBRARIES ${MODULE_TARGET_LIBRARIES}
+  RESOURCES ${MODULE_RESOURCES}
   WITH_GENERIC_TESTS
   )
 

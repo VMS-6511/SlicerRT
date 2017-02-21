@@ -104,6 +104,9 @@ public:
   /// \return string indicating whether collision occurred
   std::string CheckForCollisions(vtkMRMLRoomsEyeViewNode* parameterNode);
 
+
+  void UpdateTreatmentOrientationMarker();
+
   //bool CalculateNewSourcePosition(vtkMRMLRTBeamNode* beamNode, double oldSourcePosition[3], double newSourcePosition[3]);
 
 protected:

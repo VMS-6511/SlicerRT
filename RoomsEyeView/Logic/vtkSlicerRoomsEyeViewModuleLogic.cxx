@@ -44,7 +44,15 @@
 #include <vtkSlicerTransformLogic.h>
 #include <vtkTransform.h>
 #include <vtkCenterOfMass.h>
-
+#include <vtkAlgorithmOutput.h>
+#include <vtkAppendPolyData.h>
+#include <vtkDebugLeaks.h>
+#include <vtkPolyDataReader.h>
+#include <vtkPolyDataWriter.h>
+#include <vtkXMLPolyDataReader.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <vtkVersion.h>
+#include <vtksys/SystemTools.hxx>
 //----------------------------------------------------------------------------
 // Treatment machine component names
 static const char* COLLIMATOR_MODEL_NAME = "CollimatorModel";
@@ -401,10 +409,10 @@ void vtkSlicerRoomsEyeViewModuleLogic::LoadLinacModels()
   modelsLogic->AddModel(tableTopModelFilePath.c_str());
 
   // TODO: Uncomment once Additional Devices STL models are created
-  /**std::string applicatorHolderModelFilePath = additionalDevicesDirectory + "/" + APPLICATORHOLDER_MODEL_NAME + ".stl";
+  std::string applicatorHolderModelFilePath = treatmentMachineModelsDirectory + "/" + APPLICATORHOLDER_MODEL_NAME + ".stl";
   modelsLogic->AddModel(applicatorHolderModelFilePath.c_str());
-  std::string electronApplicatorModelFilePath = additionalDevicesDirectory + "/" + ELECTRONAPPLICATOR_MODEL_NAME + ".stl";
-  modelsLogic->AddModel(electronApplicatorModelFilePath.c_str());**/
+  std::string electronApplicatorModelFilePath = treatmentMachineModelsDirectory + "/" + ELECTRONAPPLICATOR_MODEL_NAME + ".stl";
+  modelsLogic->AddModel(electronApplicatorModelFilePath.c_str());
 
 }
 
@@ -445,7 +453,7 @@ void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
   collimatorModel->GetDisplayNode()->SetColor(0.7, 0.7, 0.95);
 
   // TODO: Uncomment once Additional Devices STL models are created
-  /**vtkMRMLModelNode* applicatorHolderModel = vtkMRMLModelNode::SafeDownCast(
+  vtkMRMLModelNode* applicatorHolderModel = vtkMRMLModelNode::SafeDownCast(
     this->GetMRMLScene()->GetFirstNodeByName(APPLICATORHOLDER_MODEL_NAME));
   if (!applicatorHolderModel)
   {
@@ -469,7 +477,7 @@ void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
     this->GetMRMLScene()->GetFirstNodeByName(ADDITIONALCOLLIMATORDEVICES_TO_COLLIMATOR_TRANSFORM_NODE_NAME));
   electronApplicatorModel->SetAndObserveTransformNodeID(electronApplicatorModelTransforms->GetID());
   electronApplicatorModel->CreateDefaultDisplayNodes();
-  electronApplicatorModel->GetDisplayNode()->VisibilityOff();**/
+  electronApplicatorModel->GetDisplayNode()->VisibilityOff();
 
   vtkMRMLModelNode* leftImagingPanelModel = vtkMRMLModelNode::SafeDownCast(
     this->GetMRMLScene()->GetFirstNodeByName(IMAGINGPANELLEFT_MODEL_NAME) );
@@ -562,6 +570,37 @@ void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
   this->CollimatorPatientCollisionDetection->SetMatrix(0, this->CollimatorToWorldTransformMatrix);
   this->CollimatorPatientCollisionDetection->SetMatrix(1, this->TableTopToWorldTransformMatrix);
   this->CollimatorPatientCollisionDetection->Update();
+}
+//-----------------------------------------------------------------------------
+void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
+{
+
+  std::string moduleShareDirectory = this->GetModuleShareDirectory();
+
+  //TODO: Only the Varian TrueBeam STx models are supported right now.
+  //      Allow loading multiple types of machines
+  std::string treatmentMachineModelsDirectory = moduleShareDirectory + "/" + "VarianTrueBeamSTx";
+  std::string additionalDevicesDirectory = moduleShareDirectory + "/" + "AdditionalTreatmentDevices";
+  // Load supported treatment machine models
+  vtkSmartPointer<vtkSlicerModelsLogic> modelsLogic = vtkSmartPointer<vtkSlicerModelsLogic>::New();
+  modelsLogic->SetMRMLScene(this->GetMRMLScene());
+
+  std::string collimatorModelFilePath = treatmentMachineModelsDirectory + "/" + COLLIMATOR_MODEL_NAME + ".stl";
+  vtkPolyDataReader* pdxReader1 = vtkPolyDataReader::New();
+  pdxReader1->SetFileName(collimatorModelFilePath.c_str());
+  pdxReader1->Update();
+  vtkAlgorithmOutput* reader1 = NULL;
+  reader1 = pdxReader1->GetOutputPort();
+
+  vtkAppendPolyData* deviceAppending = vtkSmartPointer<vtkAppendPolyData>::New();
+  //deviceAppending->SetUserManagedInputs(1);
+  vtkErrorMacro("I am in this function!");
+  vtkMRMLModelNode* gantryModel = vtkMRMLModelNode::SafeDownCast(this->GetMRMLScene()->GetFirstNodeByName(GANTRY_MODEL_NAME));
+  vtkPolyData* collimatorModelPolyData = vtkSmartPointer<vtkPolyData>::New();
+  vtkAlgorithmOutput* algorithmOutput = vtkSmartPointer<vtkAlgorithmOutput>::New();
+  vtkErrorMacro("I am in this function!" << *(gantryModel->GetPolyData()));
+  deviceAppending->AddInputData(gantryModel->GetPolyData());
+
 }
 
 //----------------------------------------------------------------------------

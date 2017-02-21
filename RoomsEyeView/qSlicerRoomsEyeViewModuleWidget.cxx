@@ -55,6 +55,8 @@
 #include <vtkGeneralTransform.h>
 #include <vtkLinearTransform.h>
 #include <vtkTransform.h>
+#include <vtkAlgorithmOutput.h>
+#include <vtkAppendFilter.h>
 
 //-----------------------------------------------------------------------------
 /// \ingroup SlicerRt_QtModules_RoomsEyeView
@@ -292,6 +294,8 @@ void qSlicerRoomsEyeViewModuleWidget::additionalCollimatorDevicesChecked(){
   {
     return;
   }
+  paramNode->SetApplicatorHolderVisibility(d->applicatorHolderCheckBox->isChecked());
+  paramNode->SetElectronApplicatorVisibility(d->electronApplicatorCheckBox->isChecked());
   d->logic()->UpdateAdditionalDevicesVisibility(paramNode);
 }
 
@@ -357,6 +361,7 @@ void qSlicerRoomsEyeViewModuleWidget::gantryRotationSliderValueChanged()
   d->logic()->UpdateGantryToFixedReferenceTransform(paramNode);
 
   this->checkForCollisions();
+ // d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
