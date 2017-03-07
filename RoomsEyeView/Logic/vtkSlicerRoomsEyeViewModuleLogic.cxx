@@ -28,6 +28,7 @@
 #include <vtkMRMLDisplayNode.h>
 #include "vtkMRMLModelNode.h"
 #include <vtkMRMLRTBeamNode.h>
+#include <vtkMRMLViewNode.h>
 //#include <vtkSlicerIECTransformLogic.h>
 
 // Slicer includes
@@ -35,6 +36,11 @@
 #include <vtkSegmentationConverter.h>
 #include <qSlicerCoreIOManager.h>
 #include <qSlicerCoreApplication.h>
+#include <qSlicerApplication.h>
+#include <qSlicerLayoutManager.h>
+#include <qMRMLSliceWidget.h>
+#include <qMRMLThreeDWidget.h>
+#include <qMRMLThreeDView.h>
 
 // VTK includes
 #include <vtkNew.h>
@@ -575,32 +581,31 @@ void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
 void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
 {
 
-  std::string moduleShareDirectory = this->GetModuleShareDirectory();
-
-  //TODO: Only the Varian TrueBeam STx models are supported right now.
-  //      Allow loading multiple types of machines
-  std::string treatmentMachineModelsDirectory = moduleShareDirectory + "/" + "VarianTrueBeamSTx";
-  std::string additionalDevicesDirectory = moduleShareDirectory + "/" + "AdditionalTreatmentDevices";
-  // Load supported treatment machine models
-  vtkSmartPointer<vtkSlicerModelsLogic> modelsLogic = vtkSmartPointer<vtkSlicerModelsLogic>::New();
-  modelsLogic->SetMRMLScene(this->GetMRMLScene());
-
-  std::string collimatorModelFilePath = treatmentMachineModelsDirectory + "/" + COLLIMATOR_MODEL_NAME + ".stl";
-  vtkPolyDataReader* pdxReader1 = vtkPolyDataReader::New();
-  pdxReader1->SetFileName(collimatorModelFilePath.c_str());
-  pdxReader1->Update();
-  vtkAlgorithmOutput* reader1 = NULL;
-  reader1 = pdxReader1->GetOutputPort();
-
-  vtkAppendPolyData* deviceAppending = vtkSmartPointer<vtkAppendPolyData>::New();
-  //deviceAppending->SetUserManagedInputs(1);
-  vtkErrorMacro("I am in this function!");
+  vtkSmartPointer<vtkAppendPolyData> deviceAppending = vtkSmartPointer<vtkAppendPolyData>::New();
   vtkMRMLModelNode* gantryModel = vtkMRMLModelNode::SafeDownCast(this->GetMRMLScene()->GetFirstNodeByName(GANTRY_MODEL_NAME));
-  vtkPolyData* collimatorModelPolyData = vtkSmartPointer<vtkPolyData>::New();
-  vtkAlgorithmOutput* algorithmOutput = vtkSmartPointer<vtkAlgorithmOutput>::New();
-  vtkErrorMacro("I am in this function!" << *(gantryModel->GetPolyData()));
-  deviceAppending->AddInputData(gantryModel->GetPolyData());
+  vtkMRMLModelNode* collimatorModel = vtkMRMLModelNode::SafeDownCast(this->GetMRMLScene()->GetFirstNodeByName(COLLIMATOR_MODEL_NAME));
+  vtkMRMLModelNode* leftImagingPanelModel = vtkMRMLModelNode::SafeDownCast(
+    this->GetMRMLScene()->GetFirstNodeByName(IMAGINGPANELLEFT_MODEL_NAME));
+  vtkMRMLModelNode* rightImagingPanelModel = vtkMRMLModelNode::SafeDownCast(
+    this->GetMRMLScene()->GetFirstNodeByName(IMAGINGPANELRIGHT_MODEL_NAME));
+  vtkMRMLModelNode* patientSupportModel = vtkMRMLModelNode::SafeDownCast(
+    this->GetMRMLScene()->GetFirstNodeByName(PATIENTSUPPORT_MODEL_NAME));
+  vtkMRMLModelNode* tableTopModel = vtkMRMLModelNode::SafeDownCast(
+    this->GetMRMLScene()->GetFirstNodeByName(TABLETOP_MODEL_NAME));
 
+  vtkPolyData* inputs[] = { gantryModel->GetPolyData(), collimatorModel->GetPolyData(), leftImagingPanelModel->GetPolyData(), rightImagingPanelModel->GetPolyData(), patientSupportModel->GetPolyData(), tableTopModel->GetPolyData()};
+  vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();
+  vtkSmartPointer<vtkMRMLModelNode> outputModel = vtkSmartPointer<vtkMRMLModelNode>::New();
+  deviceAppending->ExecuteAppend(output,inputs,6);
+  this->GetMRMLScene()->AddNode(outputModel);
+  outputModel->SetAndObservePolyData(output);
+
+  qSlicerApplication* slicerApplication = qSlicerApplication::application();
+  qSlicerLayoutManager* layoutManager = slicerApplication->layoutManager();
+  qMRMLThreeDView* threeDView = layoutManager->threeDWidget(0)->threeDView();
+  vtkMRMLViewNode* viewNode = threeDView->mrmlViewNode();
+  viewNode->SetOrientationMarkerHumanModelNodeID(outputModel->GetID());
+  
 }
 
 //----------------------------------------------------------------------------

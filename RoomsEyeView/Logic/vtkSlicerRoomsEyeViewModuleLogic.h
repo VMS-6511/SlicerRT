@@ -32,6 +32,7 @@ Ontario with funds provided by the Ontario Ministry of Health and Long-Term Care
 #include <vtkSlicerModuleLogic.h>
 
 #include "vtkCollisionDetectionFilter.h"
+#include <vtkMRMLModelNode.h>
 
 class vtkMRMLRoomsEyeViewNode;
 class vtkMRMLRTBeamNode;
@@ -103,7 +104,6 @@ public:
   /// Check for collisions between pieces of linac model using vtkCollisionDetectionFilter
   /// \return string indicating whether collision occurred
   std::string CheckForCollisions(vtkMRMLRoomsEyeViewNode* parameterNode);
-
 
   void UpdateTreatmentOrientationMarker();
 
