@@ -105,6 +105,8 @@ vtkSlicerRoomsEyeViewModuleLogic::vtkSlicerRoomsEyeViewModuleLogic()
   , GantryPatientSupportCollisionDetection(NULL)
   , CollimatorPatientCollisionDetection(NULL)
   , CollimatorTableTopCollisionDetection(NULL)
+  , AdditionalModelsTableTopCollisionDetection(NULL)
+  , AdditionalModelsPatientSupportCollisionDetection(NULL)
 {
   this->CollimatorToWorldTransformMatrix = vtkMatrix4x4::New();
   this->TableTopToWorldTransformMatrix = vtkMatrix4x4::New();
@@ -114,6 +116,8 @@ vtkSlicerRoomsEyeViewModuleLogic::vtkSlicerRoomsEyeViewModuleLogic()
   this->GantryPatientSupportCollisionDetection = vtkCollisionDetectionFilter::New();
   this->CollimatorPatientCollisionDetection = vtkCollisionDetectionFilter::New();
   this->CollimatorTableTopCollisionDetection = vtkCollisionDetectionFilter::New();
+  this->AdditionalModelsTableTopCollisionDetection = vtkCollisionDetectionFilter::New();
+  this->AdditionalModelsPatientSupportCollisionDetection = vtkCollisionDetectionFilter::New();
 }
 
 //----------------------------------------------------------------------------
@@ -154,6 +158,16 @@ vtkSlicerRoomsEyeViewModuleLogic::~vtkSlicerRoomsEyeViewModuleLogic()
   {
     this->CollimatorTableTopCollisionDetection->Delete();
     this->CollimatorTableTopCollisionDetection = NULL;
+  }
+  if (this->AdditionalModelsTableTopCollisionDetection)
+  {
+    this->AdditionalModelsTableTopCollisionDetection->Delete();
+    this->AdditionalModelsTableTopCollisionDetection = NULL;
+  }
+  if (this->AdditionalModelsPatientSupportCollisionDetection)
+  {
+    this->AdditionalModelsPatientSupportCollisionDetection->Delete();
+    this->AdditionalModelsPatientSupportCollisionDetection = NULL;
   }
 }
 
@@ -576,6 +590,29 @@ void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
   this->CollimatorPatientCollisionDetection->SetMatrix(0, this->CollimatorToWorldTransformMatrix);
   this->CollimatorPatientCollisionDetection->SetMatrix(1, this->TableTopToWorldTransformMatrix);
   this->CollimatorPatientCollisionDetection->Update();
+
+  vtkSmartPointer<vtkAppendPolyData> additionalDeviceAppending = vtkSmartPointer<vtkAppendPolyData>::New();
+  vtkPolyData* inputs[] = { applicatorHolderModel->GetPolyData(), electronApplicatorModel->GetPolyData() };
+  vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();
+  vtkSmartPointer<vtkMRMLModelNode> outputModel = vtkSmartPointer<vtkMRMLModelNode>::New();
+  additionalDeviceAppending->ExecuteAppend(output, inputs, 2);
+  this->GetMRMLScene()->AddNode(outputModel);
+  outputModel->SetAndObservePolyData(output);
+
+ 
+  this->AdditionalModelsTableTopCollisionDetection->SetInput(0, outputModel->GetPolyData());
+  this->AdditionalModelsTableTopCollisionDetection->SetInput(1, tableTopModel->GetPolyData());
+  this->AdditionalModelsTableTopCollisionDetection->SetMatrix(0, this->CollimatorToWorldTransformMatrix);
+  this->AdditionalModelsTableTopCollisionDetection->SetMatrix(1, this->TableTopToWorldTransformMatrix);
+  this->AdditionalModelsTableTopCollisionDetection->Update();
+
+  this->AdditionalModelsPatientSupportCollisionDetection->SetInput(0, outputModel->GetPolyData());
+  this->AdditionalModelsPatientSupportCollisionDetection->SetInput(1, patientSupportModel->GetPolyData());
+  this->AdditionalModelsPatientSupportCollisionDetection->SetMatrix(0, this->CollimatorToWorldTransformMatrix);
+  this->AdditionalModelsPatientSupportCollisionDetection->SetMatrix(1, this->TableTopToWorldTransformMatrix);
+  this->AdditionalModelsPatientSupportCollisionDetection->Update();
+
+
 }
 //-----------------------------------------------------------------------------
 void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
@@ -1311,6 +1348,19 @@ std::string vtkSlicerRoomsEyeViewModuleLogic::CheckForCollisions(vtkMRMLRoomsEye
   {
     statusString = statusString + "Collision between collimator and table top\n";
   }
+
+  this->AdditionalModelsTableTopCollisionDetection->Update();
+  if (this->AdditionalModelsTableTopCollisionDetection->GetNumberOfContacts() > 0)
+  {
+    statusString = statusString + "Collision between additional devices and table top\n";
+  }
+
+  this->AdditionalModelsPatientSupportCollisionDetection->Update();
+  if (this->AdditionalModelsPatientSupportCollisionDetection->GetNumberOfContacts() > 0)
+  {
+    statusString = statusString + "Collision between additional devices and patient support\n";
+  }
+
 
   // Get patient body poly data
   vtkSmartPointer<vtkPolyData> patientBodyPolyData = vtkSmartPointer<vtkPolyData>::New();

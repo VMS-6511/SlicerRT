@@ -124,6 +124,11 @@ protected:
   vtkCollisionDetectionFilter* CollimatorPatientCollisionDetection;
   vtkCollisionDetectionFilter* CollimatorTableTopCollisionDetection;
 
+  vtkCollisionDetectionFilter* AdditionalModelsTableTopCollisionDetection;
+  vtkCollisionDetectionFilter* AdditionalModelsPatientSupportCollisionDetection;
+
+
+
 protected:
   vtkSlicerRoomsEyeViewModuleLogic();
   virtual ~vtkSlicerRoomsEyeViewModuleLogic();
