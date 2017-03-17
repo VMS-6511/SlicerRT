@@ -66,6 +66,7 @@ protected slots:
   void additionalModelLateralDisplacementSliderValueChanged();
   void additionalModelLongitudinalDisplacementSliderValueChanged();
   void additionalModelVerticalDisplacementSliderValueChanged();
+  void loadAdditionalDevicesButtonClicked();
 
   void beamsEyeViewButtonClicked();
   

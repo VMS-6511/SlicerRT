@@ -114,10 +114,63 @@
          <enum>QFrame::StyledPanel</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_7">
+         <item row="3" column="1">
+          <widget class="ctkSliderWidget" name="LateralTableTopDisplacementSlider">
+           <property name="minimum">
+            <double>-230.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>230.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksAbove</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="LateralTableTopDisplacementLabel">
+           <property name="text">
+            <string>Lateral Table Top Displacement:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="PatientSupportRotationLabel">
+           <property name="text">
+            <string>Patient Support Rotation:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="ctkSliderWidget" name="PatientSupportRotationSlider">
+           <property name="minimum">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>359.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000000000000000</double>
+           </property>
+           <property name="tickPosition">
+            <enum>QSlider::TicksAbove</enum>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="LongitudinalTableTopDisplacementLabel">
            <property name="text">
             <string>Longitudinal Table Top Displacement:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="VerticalTableTopDisplacementLabel">
+           <property name="text">
+            <string>Vertical Table Top Displacement:</string>
            </property>
           </widget>
          </item>
@@ -150,59 +203,6 @@
            </property>
            <property name="tickPosition">
             <enum>QSlider::TicksAbove</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="VerticalTableTopDisplacementLabel">
-           <property name="text">
-            <string>Vertical Table Top Displacement:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="ctkSliderWidget" name="LateralTableTopDisplacementSlider">
-           <property name="minimum">
-            <double>-230.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>230.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TicksAbove</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="ctkSliderWidget" name="PatientSupportRotationSlider">
-           <property name="minimum">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>359.000000000000000</double>
-           </property>
-           <property name="value">
-            <double>0.000000000000000</double>
-           </property>
-           <property name="tickPosition">
-            <enum>QSlider::TicksAbove</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="LateralTableTopDisplacementLabel">
-           <property name="text">
-            <string>Lateral Table Top Displacement:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="PatientSupportRotationLabel">
-           <property name="text">
-            <string>Patient Support Rotation:</string>
            </property>
           </widget>
          </item>
@@ -279,16 +279,26 @@
       <item row="6" column="0">
        <widget class="ctkCollapsibleButton" name="AdditionalTreatmentModelsCollapsibleButton">
         <property name="text">
-         <string>Additional Treatment Models</string>
+         <string>Additional Device Models</string>
         </property>
         <property name="contentsFrameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
+         <item row="1" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
+            <widget class="QCheckBox" name="brainLabSRSCheckBox">
+             <property name="text">
+              <string>BrainLab SRS Frame</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QCheckBox" name="applicatorHolderCheckBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Applicator Holder</string>
              </property>
@@ -296,6 +306,9 @@
            </item>
            <item>
             <widget class="QCheckBox" name="electronApplicatorCheckBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="text">
               <string>Electron Applicator</string>
              </property>
@@ -303,7 +316,7 @@
            </item>
           </layout>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -342,6 +355,17 @@
               <widget class="ctkSliderWidget" name="LateralTranslationSliderWidget"/>
              </item>
             </layout>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QPushButton" name="loadAdditionalDevicesButton">
+             <property name="text">
+              <string>Load Additional Devices</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>

@@ -60,6 +60,9 @@
 #include <vtkVersion.h>
 #include <vtksys/SystemTools.hxx>
 #include <vtkSlicerTransformLogic.h>
+#include <qSlicerFileDialog.h>
+#include <qSlicerDataDialog.h>
+#include <qSlicerIOManager.h>
 //----------------------------------------------------------------------------
 // Treatment machine component names
 static const char* COLLIMATOR_MODEL_NAME = "CollimatorModel";
@@ -438,6 +441,21 @@ void vtkSlicerRoomsEyeViewModuleLogic::LoadLinacModels()
 }
 
 //----------------------------------------------------------------------------
+void vtkSlicerRoomsEyeViewModuleLogic::LoadAdditionalDevices()
+{
+  if (!this->GetMRMLScene())
+  {
+    vtkErrorMacro("LoadLinacModels: Invalid scene!");
+    return;
+  }
+
+  qSlicerIOManager* ioManager = qSlicerApplication::application()->ioManager();
+  ioManager->openDialog("ModelFile", qSlicerDataDialog::Read, qSlicerIO::IOProperties());
+
+}
+
+
+//----------------------------------------------------------------------------
 void vtkSlicerRoomsEyeViewModuleLogic::InitializeIEC()
 {
   if (!this->GetMRMLScene())
@@ -650,13 +668,13 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> tableTopModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   tableTopModelPolyData->DeepCopy(tableTopModel->GetPolyData());
 
-  /** Figure out issues with hardenTransform function
+  
   transformLogic->hardenTransform(gantryModel);
   transformLogic->hardenTransform(collimatorModel);
   transformLogic->hardenTransform(leftImagingPanelModel);
   transformLogic->hardenTransform(rightImagingPanelModel);
   transformLogic->hardenTransform(patientSupportModel);
-  transformLogic->hardenTransform(tableTopModel);**/
+  transformLogic->hardenTransform(tableTopModel);
 
   vtkPolyData* inputs[] = { gantryModelPolyData, collimatorModelPolyData, leftImagingPanelModelPolyData, rightImagingPanelModelPolyData, patientSupportModelPolyData, tableTopModelPolyData};
   vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();

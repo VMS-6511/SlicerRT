@@ -29,6 +29,9 @@
 // Slicer includes
 #include <qSlicerApplication.h>
 #include <qSlicerLayoutManager.h>
+#include <qSlicerIOManager.h>
+#include <qSlicerDataDialog.h>
+#include <qSlicerSaveDataDialog.h>
 #include <qMRMLSliceWidget.h>
 
 // MRML includes
@@ -187,6 +190,9 @@ void qSlicerRoomsEyeViewModuleWidget::setParameterNode(vtkMRMLNode *node)
     {
       paramNode->SetPatientBodySegmentID(d->SegmentSelectorWidget->currentSegmentID().toLatin1().constData());
     }
+
+    paramNode->SetApplicatorHolderVisibility(0);
+    paramNode->SetElectronApplicatorVisibility(0);
   }
 
   this->updateWidgetFromMRML();
@@ -235,6 +241,10 @@ void qSlicerRoomsEyeViewModuleWidget::setup()
 
   this->setMRMLScene(this->mrmlScene());
 
+  qSlicerIOManager* ioManager = qSlicerApplication::application()->ioManager();
+  ioManager->registerDialog(new qSlicerDataDialog(this));
+  ioManager->registerDialog(new qSlicerSaveDataDialog(this));
+
 
   connect(d->loadModelButton, SIGNAL(clicked()), this, SLOT(loadModelButtonClicked()));
   connect(d->applicatorHolderCheckBox, SIGNAL(stateChanged(int)), this, SLOT(additionalCollimatorDevicesChecked()));
@@ -246,6 +256,8 @@ void qSlicerRoomsEyeViewModuleWidget::setup()
   connect(d->VerticalTableTopDisplacementSlider, SIGNAL(valueChanged(double)), this, SLOT(verticalTableTopDisplacementSliderValueChanged()));
   connect(d->LongitudinalTableTopDisplacementSlider, SIGNAL(valueChanged(double)), this, SLOT(longitudinalTableTopDisplacementSliderValueChanged()));
   connect(d->LateralTableTopDisplacementSlider, SIGNAL(valueChanged(double)), this, SLOT(lateralTableTopDisplacementSliderValueChanged()));
+
+  connect(d->loadAdditionalDevicesButton, SIGNAL(clicked()), this, SLOT(loadAdditionalDevicesButtonClicked()));
   connect(d->LateralTranslationSliderWidget, SIGNAL(valueChanged(double)), this, SLOT(additionalModelLateralDisplacementSliderValueChanged()));
   connect(d->LongitudinalTranslationSliderWidget, SIGNAL(valueChanged(double)), this, SLOT(additionalModelLongitudinalDisplacementSliderValueChanged()));
   connect(d->VerticalTranslationSliderWidget, SIGNAL(valueChanged(double)), this, SLOT(additionalModelVerticalDisplacementSliderValueChanged()));
@@ -276,6 +288,21 @@ void qSlicerRoomsEyeViewModuleWidget::loadModelButtonClicked()
   //TODO: Move this a more central place after integrating REV into EBP
   // Initialize logic
   d->logic()->InitializeIEC();
+
+  //TODO: Add function UpdateTreatmentOrientationMarker that merges the treatment machine components into a model that can be set as orientation marker,
+  //TODO: Add new option 'Treatment room' to orientation marker choices and merged model with actual colors (surface scalars?)
+  /**qSlicerApplication* slicerApplication = qSlicerApplication::application();
+  qSlicerLayoutManager* layoutManager = slicerApplication->layoutManager();
+  qMRMLThreeDView* threeDView = layoutManager->threeDWidget(0)->threeDView();
+  vtkMRMLViewNode* viewNode = threeDView->mrmlViewNode();
+  viewNode->SetOrientationMarkerHumanModelNodeID(this->mrmlScene()->GetFirstNodeByName("EBRTOrientationMarkerModel")->GetID());**/
+}
+//-----------------------------------------------------------------------------
+void qSlicerRoomsEyeViewModuleWidget::loadAdditionalDevicesButtonClicked()
+{
+  Q_D(qSlicerRoomsEyeViewModuleWidget);
+
+  d->logic()->LoadAdditionalDevices();
 
   //TODO: Add function UpdateTreatmentOrientationMarker that merges the treatment machine components into a model that can be set as orientation marker,
   //TODO: Add new option 'Treatment room' to orientation marker choices and merged model with actual colors (surface scalars?)
@@ -361,7 +388,8 @@ void qSlicerRoomsEyeViewModuleWidget::gantryRotationSliderValueChanged()
   d->logic()->UpdateGantryToFixedReferenceTransform(paramNode);
 
   this->checkForCollisions();
- // d->logic()->UpdateTreatmentOrientationMarker();
+  d->logic()->UpdateTreatmentOrientationMarker();
+ 
 }
 
 //-----------------------------------------------------------------------------
@@ -382,6 +410,7 @@ void qSlicerRoomsEyeViewModuleWidget::imagingPanelMovementSliderValueChanged()
   d->logic()->UpdateImagingPanelMovementTransforms(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
@@ -404,6 +433,7 @@ void qSlicerRoomsEyeViewModuleWidget::collimatorRotationSliderValueChanged()
   d->logic()->UpdateCollimatorToGantryTransform(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
@@ -424,6 +454,7 @@ void qSlicerRoomsEyeViewModuleWidget::patientSupportRotationSliderValueChanged()
   d->logic()->UpdatePatientSupportToFixedReferenceTransform(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
@@ -444,6 +475,7 @@ void qSlicerRoomsEyeViewModuleWidget::verticalTableTopDisplacementSliderValueCha
   d->logic()->UpdateVerticalDisplacementTransforms(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
@@ -464,6 +496,7 @@ void qSlicerRoomsEyeViewModuleWidget::longitudinalTableTopDisplacementSliderValu
   d->logic()->UpdateTableTopEccentricRotationToPatientSupportTransform(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
@@ -484,6 +517,7 @@ void qSlicerRoomsEyeViewModuleWidget::lateralTableTopDisplacementSliderValueChan
   d->logic()->UpdateTableTopEccentricRotationToPatientSupportTransform(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 //-----------------------------------------------------------------------------
 void qSlicerRoomsEyeViewModuleWidget::additionalModelLateralDisplacementSliderValueChanged()
@@ -503,6 +537,7 @@ void qSlicerRoomsEyeViewModuleWidget::additionalModelLateralDisplacementSliderVa
   d->logic()->UpdateAdditionalCollimatorDevicesToCollimatorTransforms(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 //-----------------------------------------------------------------------------
 void qSlicerRoomsEyeViewModuleWidget::additionalModelLongitudinalDisplacementSliderValueChanged()
@@ -522,6 +557,7 @@ void qSlicerRoomsEyeViewModuleWidget::additionalModelLongitudinalDisplacementSli
   d->logic()->UpdateAdditionalCollimatorDevicesToCollimatorTransforms(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 //-----------------------------------------------------------------------------
 void qSlicerRoomsEyeViewModuleWidget::additionalModelVerticalDisplacementSliderValueChanged()
@@ -541,6 +577,7 @@ void qSlicerRoomsEyeViewModuleWidget::additionalModelVerticalDisplacementSliderV
   d->logic()->UpdateAdditionalCollimatorDevicesToCollimatorTransforms(paramNode);
 
   this->checkForCollisions();
+  d->logic()->UpdateTreatmentOrientationMarker();
 }
 
 //-----------------------------------------------------------------------------
