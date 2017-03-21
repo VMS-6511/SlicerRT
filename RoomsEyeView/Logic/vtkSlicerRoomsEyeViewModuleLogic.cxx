@@ -678,7 +678,6 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> collimatorModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   collimatorModelPolyData->DeepCopy(collimatorModel->GetPolyData());
   transformPolyData->SetInputData(collimatorModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
   collimatorModelTransforms->GetTransformFromWorld(transform);
   transformPolyData->SetTransform(transform);
   collimatorModelPolyData = transformPolyData->GetOutput();
@@ -686,7 +685,6 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> leftImagingPanelModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   leftImagingPanelModelPolyData->DeepCopy(leftImagingPanelModel->GetPolyData());
   transformPolyData->SetInputData(leftImagingPanelModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
   leftImagingPanelModelTransforms->GetTransformFromWorld(transform);
   transformPolyData->SetTransform(transform);
   leftImagingPanelModelPolyData = transformPolyData->GetOutput();
@@ -694,7 +692,6 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> rightImagingPanelModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   rightImagingPanelModelPolyData->DeepCopy(rightImagingPanelModel->GetPolyData());
   transformPolyData->SetInputData(gantryModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
   rightImagingPanelModelTransforms->GetTransformFromWorld(transform);
   transformPolyData->SetTransform(transform);
   rightImagingPanelModelPolyData = transformPolyData->GetOutput();
@@ -702,7 +699,6 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> patientSupportModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   patientSupportModelPolyData->DeepCopy(patientSupportModel->GetPolyData());
   transformPolyData->SetInputData(patientSupportModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
   patientSupportModelTransforms->GetTransformFromWorld(transform);
   transformPolyData->SetTransform(transform);
   patientSupportModelPolyData = transformPolyData->GetOutput();
@@ -710,7 +706,6 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
   vtkSmartPointer<vtkPolyData> tableTopModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   tableTopModelPolyData->DeepCopy(tableTopModel->GetPolyData());
   transformPolyData->SetInputData(tableTopModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
   tableTopModelTransforms->GetTransformFromWorld(transform);
   transformPolyData->SetTransform(transform);
   tableTopModelPolyData = transformPolyData->GetOutput();
