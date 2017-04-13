@@ -65,6 +65,7 @@
 #include <qSlicerIOManager.h>
 #include <vtkTransformPolyDataFilter.h>
 #include <vtkGeneralTransform.h>
+#include <vtkTransformFilter.h>
 //----------------------------------------------------------------------------
 // Treatment machine component names
 static const char* COLLIMATOR_MODEL_NAME = "CollimatorModel";
@@ -678,77 +679,75 @@ void vtkSlicerRoomsEyeViewModuleLogic::UpdateTreatmentOrientationMarker()
 
   vtkSmartPointer<vtkPolyData> gantryModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   gantryModelPolyData->DeepCopy(gantryModel->GetPolyData());
-  //transformPolyData->SetInputData(gantryModelPolyData);
-  vtkSmartPointer<vtkGeneralTransform> transform = vtkSmartPointer<vtkGeneralTransform>::New();
-  gantryModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  gantryModelPolyData = transformPolyData->GetOutput();**/
 
   vtkSmartPointer<vtkPolyData> collimatorModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   collimatorModelPolyData->DeepCopy(collimatorModel->GetPolyData());
-  //transformPolyData->SetInputData(collimatorModelPolyData);
-  collimatorModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  collimatorModelPolyData = transformPolyData->GetOutput();**/
 
   vtkSmartPointer<vtkPolyData> leftImagingPanelModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   leftImagingPanelModelPolyData->DeepCopy(leftImagingPanelModel->GetPolyData());
-  //transformPolyData->SetInputData(leftImagingPanelModelPolyData);
-  leftImagingPanelModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  leftImagingPanelModelPolyData = transformPolyData->GetOutput();**/
 
   vtkSmartPointer<vtkPolyData> rightImagingPanelModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   rightImagingPanelModelPolyData->DeepCopy(rightImagingPanelModel->GetPolyData());
-  //transformPolyData->SetInputData(gantryModelPolyData);
-  rightImagingPanelModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  rightImagingPanelModelPolyData = transformPolyData->GetOutput();**/
 
   vtkSmartPointer<vtkPolyData> patientSupportModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   patientSupportModelPolyData->DeepCopy(patientSupportModel->GetPolyData());
-  //transformPolyData->SetInputData(patientSupportModelPolyData);
-  patientSupportModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  patientSupportModelPolyData = transformPolyData->GetOutput();**/
 
   vtkSmartPointer<vtkPolyData> tableTopModelPolyData = vtkSmartPointer<vtkPolyData>::New();
   tableTopModelPolyData->DeepCopy(tableTopModel->GetPolyData());
-  //transformPolyData->SetInputData(tableTopModelPolyData);
-  tableTopModelTransforms->GetTransformFromWorld(transform);
-  /**transformPolyData->SetTransform(transform);
-  tableTopModelPolyData = transformPolyData->GetOutput();**/
 
-  vtkSmartPointer<vtkMRMLModelNode> gantryModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    gantryModelCopy->SetAndObservePolyData(gantryModelPolyData);
-    gantryModelCopy->SetAndObserveTransformNodeID(gantryModelTransforms->GetID());
+  vtkTransformFilter* gantryTransformFilter = vtkTransformFilter::New();
+  gantryTransformFilter->SetInputData(gantryModelPolyData);
+  vtkGeneralTransform* gantryModelTransform = vtkGeneralTransform::New();
+  gantryModelTransforms->GetTransformFromWorld(gantryModelTransform);
+  gantryModelTransform->Inverse();
+  gantryTransformFilter->SetTransform(gantryModelTransform);
+  gantryTransformFilter->Update();
+  gantryModelPolyData = vtkPolyData::SafeDownCast(gantryTransformFilter->GetOutput());
 
-   vtkSmartPointer<vtkMRMLModelNode> collimatorModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    collimatorModelCopy->SetAndObservePolyData(collimatorModelPolyData);
-    collimatorModelCopy->SetAndObserveTransformNodeID(collimatorModelTransforms->GetID());
+  vtkTransformFilter* collimatorTransformFilter = vtkTransformFilter::New();
+  collimatorTransformFilter->SetInputData(collimatorModelPolyData);
+  vtkGeneralTransform* collimatorModelTransform = vtkGeneralTransform::New();
+  collimatorModelTransforms->GetTransformFromWorld(collimatorModelTransform);
+  collimatorModelTransform->Inverse();
+  collimatorTransformFilter->SetTransform(collimatorModelTransform);
+  collimatorTransformFilter->Update();
+  collimatorModelPolyData = vtkPolyData::SafeDownCast(collimatorTransformFilter->GetOutput());
 
-   vtkSmartPointer<vtkMRMLModelNode> leftImagingPanelModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    leftImagingPanelModelCopy->SetAndObservePolyData(leftImagingPanelModelPolyData);
-    leftImagingPanelModelCopy->SetAndObserveTransformNodeID(leftImagingPanelModelTransforms->GetID());
+  vtkTransformFilter* leftImagingPanelTransformFilter = vtkTransformFilter::New();
+  leftImagingPanelTransformFilter->SetInputData(leftImagingPanelModelPolyData);
+  vtkGeneralTransform* leftImagingPanelModelTransform = vtkGeneralTransform::New();
+  leftImagingPanelModelTransforms->GetTransformFromWorld(leftImagingPanelModelTransform);
+  leftImagingPanelModelTransform->Inverse();
+  leftImagingPanelTransformFilter->SetTransform(leftImagingPanelModelTransform);
+  leftImagingPanelTransformFilter->Update();
+  leftImagingPanelModelPolyData = vtkPolyData::SafeDownCast(leftImagingPanelTransformFilter->GetOutput());
 
-    vtkSmartPointer<vtkMRMLModelNode> rightImagingPanelModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    rightImagingPanelModelCopy->SetAndObservePolyData(rightImagingPanelModelPolyData);
-    rightImagingPanelModelCopy->SetAndObserveTransformNodeID(rightImagingPanelModelTransforms->GetID());
+  vtkTransformFilter* rightImagingPanelTransformFilter = vtkTransformFilter::New();
+  rightImagingPanelTransformFilter->SetInputData(rightImagingPanelModelPolyData);
+  vtkGeneralTransform* rightImagingPanelModelTransform = vtkGeneralTransform::New();
+  rightImagingPanelModelTransforms->GetTransformFromWorld(rightImagingPanelModelTransform);
+  rightImagingPanelModelTransform->Inverse();
+  rightImagingPanelTransformFilter->SetTransform(rightImagingPanelModelTransform);
+  rightImagingPanelTransformFilter->Update();
+  rightImagingPanelModelPolyData = vtkPolyData::SafeDownCast(rightImagingPanelTransformFilter->GetOutput());
 
-    vtkSmartPointer<vtkMRMLModelNode> patientSupportModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    patientSupportModelCopy->SetAndObservePolyData(patientSupportModelPolyData);
-    patientSupportModelCopy->SetAndObserveTransformNodeID(patientSupportModelTransforms->GetID());
+  vtkTransformFilter* patientSupportTransformFilter = vtkTransformFilter::New();
+  patientSupportTransformFilter->SetInputData(patientSupportModelPolyData);
+  vtkGeneralTransform* patientSupportModelTransform = vtkGeneralTransform::New();
+  patientSupportModelTransforms->GetTransformFromWorld(patientSupportModelTransform);
+  patientSupportModelTransform->Inverse();
+  patientSupportTransformFilter->SetTransform(patientSupportModelTransform);
+  patientSupportTransformFilter->Update();
+  patientSupportModelPolyData = vtkPolyData::SafeDownCast(patientSupportTransformFilter->GetOutput());
 
-    vtkSmartPointer<vtkMRMLModelNode> tableTopModelCopy = vtkSmartPointer<vtkMRMLModelNode>::New();
-    tableTopModelCopy->SetAndObservePolyData(tableTopModelPolyData);
-    tableTopModelCopy->SetAndObserveTransformNodeID(tableTopModelTransforms->GetID());
-
-  transformLogic->hardenTransform(gantryModelTransforms);
-  transformLogic->hardenTransform(collimatorModelTransforms);
-  transformLogic->hardenTransform(leftImagingPanelModelTransforms);
-  transformLogic->hardenTransform(rightImagingPanelModelTransforms);
-  transformLogic->hardenTransform(patientSupportModelTransforms);
-  transformLogic->hardenTransform(tableTopModelTransforms);
+  vtkTransformFilter* tableTopTransformFilter = vtkTransformFilter::New();
+  tableTopTransformFilter->SetInputData(tableTopModelPolyData);
+  vtkGeneralTransform* tableTopModelTransform = vtkGeneralTransform::New();
+  tableTopModelTransforms->GetTransformFromWorld(tableTopModelTransform);
+  tableTopModelTransform->Inverse();
+  tableTopTransformFilter->SetTransform(tableTopModelTransform);
+  tableTopTransformFilter->Update();
+  tableTopModelPolyData = vtkPolyData::SafeDownCast(tableTopTransformFilter->GetOutput());
 
   vtkPolyData* inputs[] = { gantryModelPolyData, collimatorModelPolyData, leftImagingPanelModelPolyData, rightImagingPanelModelPolyData, patientSupportModelPolyData, tableTopModelPolyData};
   vtkSmartPointer<vtkPolyData> output = vtkSmartPointer<vtkPolyData>::New();
